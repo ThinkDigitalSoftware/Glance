@@ -3,8 +3,8 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-ThunkAction<ReddigramState> loadPreferences() {
-  return (Store<ReddigramState> store) async {
+ThunkAction<GlanceState> loadPreferences() {
+  return (Store<GlanceState> store) async {
     final prefs = await SharedPreferences.getInstance();
 
     store.dispatch(SetPreferencesBulk(PreferencesState((b) => b
@@ -15,8 +15,8 @@ ThunkAction<ReddigramState> loadPreferences() {
   };
 }
 
-ThunkAction<ReddigramState> setTheme(AppTheme theme) {
-  return (Store<ReddigramState> store) async {
+ThunkAction<GlanceState> setTheme(AppTheme theme) {
+  return (Store<GlanceState> store) async {
     (await SharedPreferences.getInstance())
         .setString('theme', theme.toString());
 
@@ -24,16 +24,16 @@ ThunkAction<ReddigramState> setTheme(AppTheme theme) {
   };
 }
 
-ThunkAction<ReddigramState> setShowNsfw(bool showNsfw) {
-  return (Store<ReddigramState> store) async {
+ThunkAction<GlanceState> setShowNsfw(bool showNsfw) {
+  return (Store<GlanceState> store) async {
     (await SharedPreferences.getInstance()).setBool('show_nsfw', showNsfw);
 
     store.dispatch(SetShowNsfw(showNsfw));
   };
 }
 
-ThunkAction<ReddigramState> setCutLongPhotos(bool cutLongPhotos) {
-  return (Store<ReddigramState> store) async {
+ThunkAction<GlanceState> setCutLongPhotos(bool cutLongPhotos) {
+  return (Store<GlanceState> store) async {
     (await SharedPreferences.getInstance())
         .setBool('cut_long_photos', cutLongPhotos);
 

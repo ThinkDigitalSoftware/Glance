@@ -1,22 +1,24 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:reddigram/app.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:reddigram/api/api.dart';
 import 'package:reddigram/consts.dart';
 import 'package:reddigram/store/store.dart';
+import 'package:reddigram/utils/extensions.dart';
 import 'package:reddigram/widgets/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PreferencesSheet extends StatelessWidget {
   void _connectToReddit(BuildContext context) async {
-    ReddigramApp.analytics.logEvent(name: 'login_attempt');
-
+//    GlanceApp.analytics.logEvent(name: 'login_attempt');
     if (await _showRedditBugWarningAlert(context) != true) return;
 
-    launch('https://www.reddit.com/api/v1/authorize'
-        '?client_id=${GlanceConsts.oauthClientId}&response_type=code'
-        '&state=x&scope=read+mysubreddits+vote+identity&duration=permanent'
-        '&redirect_uri=${GlanceConsts.oauthRedirectUrl}');
+    redditRepository.launchOathPage();
+    final String code = await redditRepository.getAccessCode();
+
+    StoreProvider.of<GlanceState>(context)
+        .dispatch(authenticateUserFromCode(code));
   }
 
   Future<bool> _showRedditBugWarningAlert(BuildContext context) async {
@@ -67,13 +69,13 @@ class PreferencesSheet extends StatelessWidget {
   }
 
   void _signOut(BuildContext context) {
-    StoreProvider.of<ReddigramState>(context).dispatch(signUserOut());
-    ReddigramApp.analytics.logEvent(name: 'sign_out');
+    StoreProvider.of<GlanceState>(context).dispatch(signUserOut());
+//    GlanceApp.analytics.logEvent(name: 'sign_out');
   }
 
   void _openPrivacyPolicy() async {
     launch('https://reddigram.wolszon.me/privacy');
-    ReddigramApp.analytics.logEvent(name: 'open_privacy_policy');
+//    GlanceApp.analytics.logEvent(name: 'open_privacy_policy');
   }
 
   @override
@@ -99,7 +101,7 @@ class PreferencesSheet extends StatelessWidget {
   }
 
   Widget _buildConnectTile() {
-    return StoreConnector<ReddigramState, AuthState>(
+    return StoreConnector<GlanceState, AuthState>(
       converter: (store) => store.state.authState,
       builder: (context, authState) =>
           authState.status == AuthStatus.authenticated

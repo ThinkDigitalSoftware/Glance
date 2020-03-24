@@ -1,6 +1,6 @@
 import 'package:reddigram/store/store.dart';
 
-ReddigramState rootReducer(ReddigramState state, action) {
+GlanceState rootReducer(GlanceState state, action) {
   return state.rebuild((b) => b
     ..authState.replace(authStateReducer(state.authState, action))
     ..preferences.replace(preferencesReducer(state.preferences, action))

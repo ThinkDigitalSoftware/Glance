@@ -31,7 +31,7 @@ class _FeedTabState extends State<FeedTab> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<ReddigramState, _BodyViewModel>(
+    return StoreConnector<GlanceState, _BodyViewModel>(
       converter: (store) => _BodyViewModel.fromStore(store, widget.feedName),
       builder: (context, vm) {
         return RefreshIndicator(
@@ -67,7 +67,7 @@ class _FeedTabState extends State<FeedTab> {
   }
 
   Widget _buildPhoto(BuildContext context, int index) {
-    return StoreConnector<ReddigramState, _PhotoViewModel>(
+    return StoreConnector<GlanceState, _PhotoViewModel>(
       converter: (store) =>
           _PhotoViewModel.fromStore(store, widget.feedName, index),
       builder: (context, vm) => PhotoListItem(
@@ -101,8 +101,7 @@ class _BodyViewModel {
         assert(fetchFresh != null),
         assert(fetchMore != null);
 
-  factory _BodyViewModel.fromStore(
-      Store<ReddigramState> store, String feedName) {
+  factory _BodyViewModel.fromStore(Store<GlanceState> store, String feedName) {
     return _BodyViewModel(
       photos: store.state.feeds[feedName].photosIds
           .map((photoId) => store.state.photos[photoId])
@@ -132,7 +131,7 @@ class _PhotoViewModel {
         assert(photo != null);
 
   factory _PhotoViewModel.fromStore(
-      Store<ReddigramState> store, String feedName, int index) {
+      Store<GlanceState> store, String feedName, int index) {
     final photoId = store.state.feeds[feedName].photosIds[index];
     final photo = store.state.photos[photoId];
     final subreddit = store.state.subreddits[photo.subredditId];

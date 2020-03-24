@@ -60,25 +60,26 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       key: MainScreen.scaffoldKey,
       appBar: _buildAppBar(context),
-      body: StoreConnector<ReddigramState, bool>(
-        onInit: (store) => store.dispatch(fetchFreshFeed(POPULAR)),
+      body: StoreConnector<GlanceState, bool>(
+        onInit: (store) =>
+            store.dispatch(fetchFreshFeed(SubredditDefault.popular)),
         converter: (store) => store.state.subscriptions.isNotEmpty,
         builder: (context, anySubs) => PageView(
           physics: const NeverScrollableScrollPhysics(),
           controller: _pageController,
           children: [
             FeedTab(
-              feedName: POPULAR,
+              feedName: SubredditDefault.popular,
               infiniteListKey: feedKeys[0],
               placeholder: itemsPlaceholder,
             ),
             FeedTab(
-              feedName: BEST_SUBSCRIBED,
+              feedName: SubredditDefault.bestSubscribed,
               infiniteListKey: feedKeys[1],
               placeholder: anySubs ? itemsPlaceholder : subscribeCTA,
             ),
             FeedTab(
-              feedName: NEW_SUBSCRIBED,
+              feedName: SubredditDefault.newSubscribed,
               infiniteListKey: feedKeys[2],
               placeholder: anySubs ? itemsPlaceholder : subscribeCTA,
             ),
@@ -132,7 +133,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
-      title: const ReddigramLogo(),
+      title: const GlanceLogo(),
       centerTitle: true,
       leading: _buildAccountLeadingIcon(context),
     );
@@ -140,7 +141,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget _buildAccountLeadingIcon(BuildContext context) {
     return IconButton(
-      icon: StoreConnector<ReddigramState, bool>(
+      icon: StoreConnector<GlanceState, bool>(
         converter: (store) =>
             store.state.authState.status == AuthStatus.authenticated,
         builder: (context, signedIn) => AnimatedContainer(

@@ -5,15 +5,14 @@ import 'package:reddigram/store/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<ReddigramState> fetchSuggestedSubscriptions([Completer completer]) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> fetchSuggestedSubscriptions([Completer completer]) {
+  return (Store<GlanceState> store) {
     apiRepository
         .suggestedSubreddits(store.state.subscriptions.toList())
         .then((suggestions) {
-          store.dispatch(FetchedSuggestedSubscriptions(suggestions));
-          store.dispatch(fetchSubreddits(suggestions));
-        })
-        .whenComplete(() => completer?.complete());
+      store.dispatch(FetchedSuggestedSubscriptions(suggestions));
+      store.dispatch(fetchSubreddits(suggestions));
+    }).whenComplete(() => completer?.complete());
   };
 }
 

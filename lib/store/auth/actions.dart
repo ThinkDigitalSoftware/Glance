@@ -8,12 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const _refreshTokenKey = 'reddit_refresh_token';
 
-Future<void> _loadFeeds(Store<ReddigramState> store) {
+Future<void> _loadFeeds(Store<GlanceState> store) {
   // Fetch all feeds after we have info if user is authenticated or not.
   final bestCompleter = Completer();
-  store.dispatch(fetchFreshFeed(BEST_SUBSCRIBED, completer: bestCompleter));
+  store.dispatch(fetchFreshFeed(SubredditDefault.bestSubscribed,
+      completer: bestCompleter));
   final newCompleter = Completer();
-  store.dispatch(fetchFreshFeed(NEW_SUBSCRIBED, completer: newCompleter));
+  store.dispatch(
+      fetchFreshFeed(SubredditDefault.newSubscribed, completer: newCompleter));
 
   return Future.wait([
     bestCompleter.future,
@@ -21,7 +23,7 @@ Future<void> _loadFeeds(Store<ReddigramState> store) {
   ]);
 }
 
-void _loadUserData(Store<ReddigramState> store, String redditAccessToken) {
+void _loadUserData(Store<GlanceState> store, String redditAccessToken) {
   final futures = <Future>[];
 
   futures.add(redditRepository
@@ -41,8 +43,8 @@ void _loadUserData(Store<ReddigramState> store, String redditAccessToken) {
       );
 }
 
-ThunkAction<ReddigramState> loadUser() {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> loadUser() {
+  return (Store<GlanceState> store) {
     SharedPreferences.getInstance().then((prefs) async {
       final refreshToken = prefs.getString(_refreshTokenKey);
 
@@ -64,8 +66,8 @@ ThunkAction<ReddigramState> loadUser() {
   };
 }
 
-ThunkAction<ReddigramState> authenticateUserFromCode(String code) {
-  return (Store<ReddigramState> store) async {
+ThunkAction<GlanceState> authenticateUserFromCode(String code) {
+  return (Store<GlanceState> store) async {
     store.dispatch(SetAuthStatus(AuthStatus.authenticating));
 
     final tokens = await redditRepository.retrieveTokens(code);
@@ -76,8 +78,8 @@ ThunkAction<ReddigramState> authenticateUserFromCode(String code) {
   };
 }
 
-ThunkAction<ReddigramState> signUserOut() {
-  return (Store<ReddigramState> store) async {
+ThunkAction<GlanceState> signUserOut() {
+  return (Store<GlanceState> store) async {
     store.dispatch(SetAuthStatus(AuthStatus.signingOut));
 
     redditRepository.clearTokens();

@@ -6,7 +6,7 @@ part of 'app_state.dart';
 // BuiltValueGenerator
 // **************************************************************************
 
-class _$ReddigramState extends ReddigramState {
+class _$ReddigramState extends GlanceState {
   @override
   final AuthState authState;
   @override
@@ -65,7 +65,7 @@ class _$ReddigramState extends ReddigramState {
   }
 
   @override
-  ReddigramState rebuild(void Function(ReddigramStateBuilder) updates) =>
+  GlanceState rebuild(void Function(ReddigramStateBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
@@ -75,7 +75,7 @@ class _$ReddigramState extends ReddigramState {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is ReddigramState &&
+    return other is GlanceState &&
         authState == other.authState &&
         preferences == other.preferences &&
         photos == other.photos &&
@@ -120,7 +120,7 @@ class _$ReddigramState extends ReddigramState {
 }
 
 class ReddigramStateBuilder
-    implements Builder<ReddigramState, ReddigramStateBuilder> {
+    implements Builder<GlanceState, ReddigramStateBuilder> {
   _$ReddigramState _$v;
 
   AuthStateBuilder _authState;
@@ -186,7 +186,7 @@ class ReddigramStateBuilder
   }
 
   @override
-  void replace(ReddigramState other) {
+  void replace(GlanceState other) {
     if (other == null) {
       throw new ArgumentError.notNull('other');
     }

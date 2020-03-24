@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ReddigramTheme {
+class GlanceTheme {
   static ThemeData light() {
     final lightTheme = ThemeData.light();
 

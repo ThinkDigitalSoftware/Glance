@@ -8,17 +8,17 @@ class ShowNsfwPreferenceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<ReddigramState, PreferenceViewModel>(
+    return StoreConnector<GlanceState, PreferenceViewModel>(
       converter: (store) => PreferenceViewModel<bool>(
-            value: store.state.preferences.showNsfw,
-            onSwitch: (showNsfw) => store.dispatch(setShowNsfw(showNsfw)),
-          ),
+        value: store.state.preferences.showNsfw,
+        onSwitch: (showNsfw) => store.dispatch(setShowNsfw(showNsfw)),
+      ),
       builder: (context, vm) => SwitchListTile(
-            title: const Text('Show adult content'),
-            secondary: const Icon(Icons.block),
-            value: vm.value,
-            onChanged: vm.onSwitch,
-          ),
+        title: const Text('Show adult content'),
+        secondary: const Icon(Icons.block),
+        value: vm.value,
+        onChanged: vm.onSwitch,
+      ),
     );
   }
 }

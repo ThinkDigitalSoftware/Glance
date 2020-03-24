@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:reddigram/api/api.dart';
@@ -30,7 +28,7 @@ class _ImportSubscriptionsScreenState extends State<ImportSubscriptionsScreen> {
     super.initState();
 
     redditRepository.subscribedSubreddits().then((subreddits) {
-      final store = StoreProvider.of<ReddigramState>(context);
+      final store = StoreProvider.of<GlanceState>(context);
 
       store.dispatch(FetchedSubreddits(subreddits));
       setState(() {
@@ -50,7 +48,7 @@ class _ImportSubscriptionsScreenState extends State<ImportSubscriptionsScreen> {
   void _import() {
     setState(() => _importing = true);
 
-    final store = StoreProvider.of<ReddigramState>(context);
+    final store = StoreProvider.of<GlanceState>(context);
     _subscriptions.forEach((subredditId, import) async {
       if (!import) return;
 
@@ -119,7 +117,7 @@ class _ImportSubscriptionsScreenState extends State<ImportSubscriptionsScreen> {
       itemBuilder: (context, i) {
         final subredditId = _subscriptions.keys.toList()[i];
 
-        return StoreConnector<ReddigramState, Subreddit>(
+        return StoreConnector<GlanceState, Subreddit>(
           converter: (store) => store.state.subreddits[subredditId],
           builder: (context, subreddit) => subreddit != null
               ? CheckboxListTile(

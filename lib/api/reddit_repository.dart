@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,6 +9,8 @@ import 'package:reddigram/api/api.dart';
 import 'package:reddigram/api/response_models/response_models.dart';
 import 'package:reddigram/consts.dart';
 import 'package:reddigram/models/models.dart' as models;
+import 'package:reddigram/utils/extensions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RedditRepository {
   Dio _client;
@@ -45,9 +48,14 @@ class RedditRepository {
       })
     ]);
 
-    PackageInfo.fromPlatform().then((info) =>
-        _client.options.headers['User-Agent'] =
-            '${info.packageName}:${info.version} (by /u/Albert221)');
+    if (PlatformX.isMobile) {
+      PackageInfo.fromPlatform().then((info) =>
+          _client.options.headers['User-Agent'] =
+              '${info.packageName}:${info.version} (by /u/Albert221)');
+    } else {
+      _client.options.headers['User-Agent'] =
+          'reddigram:1.0+ (by /u/Albert221)';
+    }
   }
 
   Future<Response> _post(String path,
@@ -57,14 +65,14 @@ class RedditRepository {
       data: data,
       options: Options(
         headers: headers,
-        contentType: ContentType.parse('application/x-www-form-urlencoded'),
+        contentType: 'application/x-www-form-urlencoded',
       ),
     );
   }
 
   Future<RedditTokens> refreshAccessToken([String refreshToken]) {
-    final basicAuth = 'Basic ' +
-        base64.encode(utf8.encode('${GlanceConsts.oauthClientId}:'));
+    final basicAuth =
+        'Basic ' + base64.encode(utf8.encode('${GlanceConsts.oauthClientId}:'));
 
     return _post(
       '/api/v1/access_token',
@@ -100,22 +108,30 @@ class RedditRepository {
   }
 
   Future<RedditTokens> retrieveTokens(String code) async {
-    final basicAuth = 'Basic ' +
-        base64.encode(utf8.encode('${GlanceConsts.oauthClientId}:'));
+    final basicAuth =
+        'Basic ' + base64.encode(utf8.encode('${GlanceConsts.oauthClientId}:'));
 
-    return _post(
+    String oauthRedirectUrl;
+
+    if (PlatformX.isMobile) {
+      oauthRedirectUrl = GlanceConsts.oauthRedirectUrl;
+    } else {
+      oauthRedirectUrl = GlanceConsts.desktopOauthRedirectUrl;
+    }
+    Response response = await _post(
       '/api/v1/access_token',
       data: 'grant_type=authorization_code&code=$code'
-          '&redirect_uri=${GlanceConsts.oauthRedirectUrl}',
+          '&redirect_uri=$oauthRedirectUrl',
       headers: {'Authorization': basicAuth},
-    ).then((response) {
-      return _tokens = RedditTokens(
-        accessToken: response.data['access_token'],
-        refreshToken: response.data['refresh_token'],
-        expirationTime:
-            DateTime.now().add(Duration(seconds: response.data['expires_in'])),
-      );
-    });
+    );
+
+    _tokens = RedditTokens(
+      accessToken: response.data['access_token'],
+      refreshToken: response.data['refresh_token'],
+      expirationTime:
+          DateTime.now().add(Duration(seconds: response.data['expires_in'])),
+    );
+    return _tokens;
   }
 
   /// If [feed] equals '_EMPTY' then it always returns empty list.
@@ -184,6 +200,42 @@ class RedditRepository {
         .then((response) => serializers.deserializeWith(
             SubredditListResponse.serializer, response.data))
         .then(SubredditInfoMapper.mapList);
+  }
+
+  Future<String> getAccessCode() async {
+    final codeCompleter = Completer<String>();
+
+    final StreamController<String> onCode = new StreamController();
+    HttpServer server =
+        await HttpServer.bind(InternetAddress.loopbackIPv4, 8080);
+    server.listen((HttpRequest request) async {
+//      // print("Server started");
+      final String code = request.uri.queryParameters["code"];
+//      // print(request.uri.pathSegments);
+      request.response
+        ..statusCode = 200
+        ..headers.set("Content-Type", ContentType.html.mimeType)
+        ..write(
+            '<html><meta name="viewport" content="width=device-width, initial-scale=1.0"><body> <h2 style="text-align: center; position: absolute; top: 50%; left: 0: right: 0">Welcome to Glance</h2><h3>You can close this window<script type="javascript">window.close()</script> </h3></body></html>');
+      await request.response.close();
+      await server.close(force: true);
+      codeCompleter.complete(code);
+      await onCode.close();
+    });
+    return codeCompleter.future;
+  }
+
+  void launchOathPage() {
+    String oauthRedirectUrl;
+    if (PlatformX.isMobile) {
+      oauthRedirectUrl = GlanceConsts.oauthRedirectUrl;
+    } else {
+      oauthRedirectUrl = GlanceConsts.desktopOauthRedirectUrl;
+    }
+    launch('https://www.reddit.com/api/v1/authorize'
+        '?client_id=${GlanceConsts.oauthClientId}&response_type=code'
+        '&state=x&scope=identity,edit,flair,history,modconfig,modflair,modlog,modposts,modwiki,mysubreddits,privatemessages,read,report,save,submit,subscribe,vote,wikiedit,wikiread&duration=permanent'
+        '&redirect_uri=$oauthRedirectUrl');
   }
 }
 

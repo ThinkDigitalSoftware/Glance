@@ -4,16 +4,16 @@ import 'package:reddigram/store/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<ReddigramState> upvote(Photo photo) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> upvote(Photo photo) {
+  return (Store<GlanceState> store) {
     redditRepository
         .upvote(photo.id)
         .then((_) => store.dispatch(PhotoUpvoted(photo.id)));
   };
 }
 
-ThunkAction<ReddigramState> cancelUpvote(Photo photo) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> cancelUpvote(Photo photo) {
+  return (Store<GlanceState> store) {
     redditRepository
         .cancelUpvote(photo.id)
         .then((_) => store.dispatch(PhotoUpvoteCanceled(photo.id)));

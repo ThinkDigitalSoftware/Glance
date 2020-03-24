@@ -6,9 +6,8 @@ import 'package:reddigram/store/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<ReddigramState> searchSubreddits(String query,
-    {Completer completer}) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> searchSubreddits(String query, {Completer completer}) {
+  return (Store<GlanceState> store) {
     redditRepository.searchSubreddits(query).then((subreddits) async {
       // If there was no subreddit with this particular name...
       if (!subreddits.any(

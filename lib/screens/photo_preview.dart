@@ -41,7 +41,7 @@ class PhotoPreviewScreen extends StatelessWidget {
         ],
       ),
       body: PhotoView(
-        transitionOnUserGestures: true,
+//        transitionOnUserGestures: true,
         backgroundDecoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),

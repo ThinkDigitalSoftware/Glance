@@ -6,11 +6,11 @@ import 'package:reddigram/store/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<ReddigramState> fetchSubreddits(List<String> ids,
+ThunkAction<GlanceState> fetchSubreddits(List<String> ids,
     {Completer completer}) {
   assert(ids.length <= 100, 'there\'s more than 100 ids. what.');
 
-  return (Store<ReddigramState> store) {
+  return (Store<GlanceState> store) {
     // Make a copy so we don't operate on a reference passed to the function
     var idsList = List.of(ids);
     // Firstly check the state for already fetched subreddits so we don't

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ReddigramLogo extends StatelessWidget {
-  const ReddigramLogo({Key key}) : super(key: key);
+class GlanceLogo extends StatelessWidget {
+  const GlanceLogo({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -7,25 +7,28 @@ import 'package:reddigram/store/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-const POPULAR = 'POPULAR';
-const NEW_SUBSCRIBED = 'NEW_SUBSCRIBED';
-const BEST_SUBSCRIBED = 'BEST_SUBSCRIBED';
+class SubredditDefault {
+  static const String popular = 'popular';
+  static const String newSubscribed = 'newSubscribed';
+  static const String bestSubscribed = 'bestSubscribed';
+  static const List<String> values = [popular, newSubscribed, bestSubscribed];
+}
 
 bool isSubreddit(String feed) => feed.contains(RegExp(r'^r\/'));
 
-String _getProperFeedName(Store<ReddigramState> store, String feed) {
+String _getProperFeedName(Store<GlanceState> store, String feed) {
   final subscriptions = store.state.subscriptions;
   final subscribedSubsNames =
       subscriptions.map((id) => store.state.subreddits[id].name);
 
   switch (feed) {
-    case POPULAR:
+    case SubredditDefault.popular:
       return '/r/popular';
-    case NEW_SUBSCRIBED:
+    case SubredditDefault.newSubscribed:
       return subscriptions.isEmpty
           ? '_EMPTY'
           : 'r/' + subscribedSubsNames.join('+') + '/new';
-    case BEST_SUBSCRIBED:
+    case SubredditDefault.bestSubscribed:
       return subscriptions.isEmpty
           ? '_EMPTY'
           : 'r/' + subscribedSubsNames.join('+');
@@ -34,9 +37,9 @@ String _getProperFeedName(Store<ReddigramState> store, String feed) {
   }
 }
 
-ThunkAction<ReddigramState> fetchFreshFeed(String feedName,
+ThunkAction<GlanceState> fetchFreshFeed(String feedName,
     {int limit, Completer completer}) {
-  return (Store<ReddigramState> store) {
+  return (Store<GlanceState> store) {
     redditRepository
         .feed(_getProperFeedName(store, feedName), limit: limit)
         .then((photos) async {
@@ -72,9 +75,9 @@ ThunkAction<ReddigramState> fetchFreshFeed(String feedName,
   };
 }
 
-ThunkAction<ReddigramState> fetchMoreFeed(String feedName,
+ThunkAction<GlanceState> fetchMoreFeed(String feedName,
     {int limit, Completer completer}) {
-  return (Store<ReddigramState> store) {
+  return (Store<GlanceState> store) {
     final feed = store.state.feeds[feedName];
     final after = feed.photosIds.isEmpty ? '' : feed.photosIds.last;
 

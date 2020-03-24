@@ -5,8 +5,8 @@ import 'package:reddigram/store/store.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<ReddigramState> fetchSubscriptions([Completer completer]) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> fetchSubscriptions([Completer completer]) {
+  return (Store<GlanceState> store) {
     apiRepository.fetchSubscriptions().then((subreddits) async {
       final subredditsCompleter = Completer();
       store.dispatch(
@@ -20,22 +20,22 @@ ThunkAction<ReddigramState> fetchSubscriptions([Completer completer]) {
   };
 }
 
-ThunkAction<ReddigramState> subscribeSubreddit(String id) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> subscribeSubreddit(String id) {
+  return (Store<GlanceState> store) {
     apiRepository.subscribeSubreddit(id).then((_) {
       store.dispatch(SubscribedSubreddit(id));
-      store.dispatch(fetchFreshFeed(NEW_SUBSCRIBED));
-      store.dispatch(fetchFreshFeed(BEST_SUBSCRIBED));
+      store.dispatch(fetchFreshFeed(SubredditDefault.newSubscribed));
+      store.dispatch(fetchFreshFeed(SubredditDefault.bestSubscribed));
     });
   };
 }
 
-ThunkAction<ReddigramState> unsubscribeSubreddit(String id) {
-  return (Store<ReddigramState> store) {
+ThunkAction<GlanceState> unsubscribeSubreddit(String id) {
+  return (Store<GlanceState> store) {
     apiRepository.unsubscribeSubreddit(id).then((_) {
       store.dispatch(UnsubscribedSubreddit(id));
-      store.dispatch(fetchFreshFeed(NEW_SUBSCRIBED));
-      store.dispatch(fetchFreshFeed(BEST_SUBSCRIBED));
+      store.dispatch(fetchFreshFeed(SubredditDefault.newSubscribed));
+      store.dispatch(fetchFreshFeed(SubredditDefault.bestSubscribed));
     });
   };
 }

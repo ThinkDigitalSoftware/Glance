@@ -107,7 +107,7 @@ class _SubscriptionsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final divider = const SizedBox(height: 32.0);
 
-    return StoreConnector<ReddigramState, _SubredditsViewModel>(
+    return StoreConnector<GlanceState, _SubredditsViewModel>(
       converter: (store) => _SubredditsViewModel.fromStore(store),
       builder: (context, vm) => ListView(
         children: [
@@ -125,7 +125,7 @@ class _SubscriptionsView extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          StoreConnector<ReddigramState, bool>(
+          StoreConnector<GlanceState, bool>(
             converter: (store) =>
                 store.state.authState.status == AuthStatus.authenticated,
             builder: (context, signedIn) => signedIn
@@ -165,7 +165,7 @@ class _SubscriptionsView extends StatelessWidget {
         ),
       ),
       ...vm.subreddits
-          .map((subredditId) => StoreConnector<ReddigramState, Subreddit>(
+          .map((subredditId) => StoreConnector<GlanceState, Subreddit>(
                 key: Key(subredditId),
                 converter: (store) => store.state.subreddits[subredditId],
                 builder: (context, subreddit) => subreddit != null
@@ -195,7 +195,7 @@ class _SubscriptionsView extends StatelessWidget {
   }
 
   Widget _buildSuggestions(BuildContext context) {
-    return StoreConnector<ReddigramState, _SubredditsViewModel>(
+    return StoreConnector<GlanceState, _SubredditsViewModel>(
       converter: (store) => _SubredditsViewModel.fromStoreSuggested(store),
       builder: (context, vm) {
         return Column(
@@ -215,7 +215,7 @@ class _SubscriptionsView extends StatelessWidget {
                 title: Text('No suggestions available'),
               ),
             ...vm.subreddits
-                .map((subredditId) => StoreConnector<ReddigramState, Subreddit>(
+                .map((subredditId) => StoreConnector<GlanceState, Subreddit>(
                       key: Key('suggestion_$subredditId'),
                       converter: (store) => store.state.subreddits[subredditId],
                       builder: (context, subreddit) => subreddit != null
@@ -251,7 +251,7 @@ class _SubredditsViewModel {
         assert(subscribe != null),
         assert(unsubscribe != null);
 
-  factory _SubredditsViewModel.fromStore(Store<ReddigramState> store) {
+  factory _SubredditsViewModel.fromStore(Store<GlanceState> store) {
     return _SubredditsViewModel(
       subreddits: store.state.subscriptions.toList(),
       subscribe: (subredditId) =>
@@ -261,7 +261,7 @@ class _SubredditsViewModel {
     );
   }
 
-  factory _SubredditsViewModel.fromStoreSuggested(Store<ReddigramState> store) {
+  factory _SubredditsViewModel.fromStoreSuggested(Store<GlanceState> store) {
     return _SubredditsViewModel(
       subreddits: store.state.suggestedSubscriptions
           .where(
@@ -301,7 +301,7 @@ class _SearchViewState extends State<_SearchView> {
     super.dispose();
   }
 
-  void _searchQueryChanged(String query, Store<ReddigramState> store) {
+  void _searchQueryChanged(String query, Store<GlanceState> store) {
     if (_debounce?.isActive ?? false) {
       _debounce.cancel();
     }
@@ -359,7 +359,7 @@ class _SearchViewState extends State<_SearchView> {
               )
             : const SizedBox(height: 6),
         Expanded(
-          child: StoreConnector<ReddigramState, _SearchViewModel>(
+          child: StoreConnector<GlanceState, _SearchViewModel>(
             onInit: (store) {
               store.dispatch(ClearSearch());
 
@@ -372,7 +372,7 @@ class _SearchViewState extends State<_SearchView> {
               itemBuilder: (context, i) {
                 final subreddit = vm.subreddits[i];
 
-                return StoreConnector<ReddigramState, bool>(
+                return StoreConnector<GlanceState, bool>(
                   converter: (store) => store.state.subscriptions
                       .any((subscription) => subscription == subreddit.id),
                   builder: (context, subscribed) => SubredditListTile(
@@ -411,7 +411,7 @@ class _SearchViewModel {
         assert(subscribe != null),
         assert(unsubscribe != null);
 
-  factory _SearchViewModel.fromStore(Store<ReddigramState> store) {
+  factory _SearchViewModel.fromStore(Store<GlanceState> store) {
     return _SearchViewModel(
       state: store.state.subredditsSearch,
       subreddits: store.state.subredditsSearch.resultFeedsIds

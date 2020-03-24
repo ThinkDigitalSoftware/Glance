@@ -5,8 +5,8 @@ import 'package:reddigram/store/store.dart';
 
 part 'app_state.g.dart';
 
-abstract class ReddigramState
-    implements Built<ReddigramState, ReddigramStateBuilder> {
+abstract class GlanceState
+    implements Built<GlanceState, ReddigramStateBuilder> {
   AuthState get authState;
 
   PreferencesState get preferences;
@@ -15,7 +15,7 @@ abstract class ReddigramState
   BuiltMap<String, Photo> get photos;
 
   /// Map with all feeds in application. There are three reserved values:
-  /// [POPULAR], [NEW_SUBSCRIBED], and [BEST_SUBSCRIBED], the rest of values
+  /// [SubredditDefault.popular], [SubredditDefault.newSubscribed], and [SubredditDefault.bestSubscribed], the rest of values
   /// are subreddits' names with correct capitalization, without "r/" prefix.
   BuiltMap<String, Feed> get feeds;
 
@@ -31,18 +31,18 @@ abstract class ReddigramState
 
   SubredditsSearchState get subredditsSearch;
 
-  ReddigramState._();
+  GlanceState._();
 
-  factory ReddigramState([updates(ReddigramStateBuilder b)]) {
+  factory GlanceState([updates(ReddigramStateBuilder b)]) {
     return _$ReddigramState
         ._(
           authState: AuthState(),
           preferences: PreferencesState(),
           photos: BuiltMap<String, Photo>(),
           feeds: BuiltMap<String, Feed>({
-            POPULAR: Feed(),
-            NEW_SUBSCRIBED: Feed(),
-            BEST_SUBSCRIBED: Feed(),
+            SubredditDefault.popular: Feed(),
+            SubredditDefault.newSubscribed: Feed(),
+            SubredditDefault.bestSubscribed: Feed(),
           }),
           subreddits: BuiltMap<String, Subreddit>(),
           subscriptions: BuiltSet(),

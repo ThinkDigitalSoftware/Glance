@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
@@ -52,11 +51,11 @@ class ApiApiRepository {
 
   Future<void> authenticate(String redditAccessToken) async {
     return _client
-        .post('/authenticate',
-            data: 'access_token=$redditAccessToken',
-            options: Options(
-                contentType:
-                    ContentType.parse('application/x-www-form-urlencoded')))
+        .post(
+          '/authenticate',
+          data: 'access_token=$redditAccessToken',
+          options: Options(contentType: 'application/x-www-form-urlencoded'),
+        )
         .then((response) => _token = response.data);
   }
 

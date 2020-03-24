@@ -28,10 +28,10 @@ class _SubredditScreenState extends State<SubredditScreen> {
   final _shownNsfwIds = Set<String>();
   final _columnListKey = GlobalKey<InfiniteListState>();
 
-  Subreddit _subreddit(Store<ReddigramState> store) =>
+  Subreddit _subreddit(Store<GlanceState> store) =>
       store.state.subreddits[widget.subredditId];
 
-  bool _subredditFeedLoaded(Store<ReddigramState> store) =>
+  bool _subredditFeedLoaded(Store<GlanceState> store) =>
       _subreddit(store) != null &&
       store.state.feeds['r/${_subreddit(store).name}'] != null;
 
@@ -43,7 +43,7 @@ class _SubredditScreenState extends State<SubredditScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<ReddigramState, bool>(
+    return StoreConnector<GlanceState, bool>(
       onInit: (store) async {
         final subreddit = _subreddit(store);
 
@@ -129,7 +129,7 @@ class _SubredditScreenState extends State<SubredditScreen> {
           alignment: Alignment.center,
           padding: const EdgeInsets.only(right: 16.0),
           width: 150.0,
-          child: StoreConnector<ReddigramState, _SubscribeViewModel>(
+          child: StoreConnector<GlanceState, _SubscribeViewModel>(
             converter: (store) =>
                 _SubscribeViewModel.fromStore(store, widget.subredditId),
             builder: (context, vm) => vm.subscribed
@@ -162,10 +162,10 @@ class _SubredditScreenState extends State<SubredditScreen> {
   }
 
   Widget _buildGrid(BuildContext context) {
-    return StoreConnector<ReddigramState, bool>(
+    return StoreConnector<GlanceState, bool>(
       converter: _subredditFeedLoaded,
       builder: (context, loaded) => loaded
-          ? StoreConnector<ReddigramState, _SubredditViewModel>(
+          ? StoreConnector<GlanceState, _SubredditViewModel>(
               converter: (store) => _SubredditViewModel.fromStore(
                 store,
                 widget.subredditId,
@@ -241,10 +241,10 @@ class _SubredditScreenState extends State<SubredditScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    return StoreConnector<ReddigramState, bool>(
+    return StoreConnector<GlanceState, bool>(
       converter: _subredditFeedLoaded,
       builder: (context, loaded) => loaded
-          ? StoreConnector<ReddigramState, _SubredditViewModel>(
+          ? StoreConnector<GlanceState, _SubredditViewModel>(
               converter: (store) => _SubredditViewModel.fromStore(
                 store,
                 widget.subredditId,
@@ -277,7 +277,7 @@ class _SubredditScreenState extends State<SubredditScreen> {
 
   Widget _buildPhotoListItem(
       BuildContext context, _SubredditViewModel feedVm, int photoIndex) {
-    return StoreConnector<ReddigramState, _PhotoViewModel>(
+    return StoreConnector<GlanceState, _PhotoViewModel>(
       converter: (store) =>
           _PhotoViewModel.fromStore(store, _subreddit(store).name, photoIndex),
       builder: (context, vm) => PhotoListItem(
@@ -312,7 +312,7 @@ class _SubredditViewModel {
         assert(fetchMore != null);
 
   factory _SubredditViewModel.fromStore(
-      Store<ReddigramState> store, String subredditId, String subredditName) {
+      Store<GlanceState> store, String subredditId, String subredditName) {
     return _SubredditViewModel(
       photos: store.state.feeds['r/$subredditName'].photosIds
           .map((photoId) => store.state.photos[photoId])
@@ -339,7 +339,7 @@ class _SubscribeViewModel {
         assert(unsubscribe != null);
 
   factory _SubscribeViewModel.fromStore(
-      Store<ReddigramState> store, String subredditId) {
+      Store<GlanceState> store, String subredditId) {
     return _SubscribeViewModel(
       subscribed: store.state.subscriptions.any((sub) => sub == subredditId),
       subscribe: () => store.dispatch(subscribeSubreddit(subredditId)),
@@ -365,7 +365,7 @@ class _PhotoViewModel {
         assert(photo != null);
 
   factory _PhotoViewModel.fromStore(
-      Store<ReddigramState> store, String subredditName, int index) {
+      Store<GlanceState> store, String subredditName, int index) {
     final photoId = store.state.feeds['r/$subredditName'].photosIds[index];
     final photo = store.state.photos[photoId];
     final subreddit = store.state.subreddits[photo.subredditId];
